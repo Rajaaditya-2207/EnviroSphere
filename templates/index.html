@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EnviroSphere</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="https://unpkg.com/lucide@latest/dist/lucide.css">
+  <style>
+    .menu-icon {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      z-index: 50;
+      cursor: pointer;
+    }
+    .sidebar {
+      transform: translateX(-100%);
+      transition: transform 0.3s ease-in-out;
+      background-color: rgba(219, 234, 254, 0.6);
+      width: 14rem;
+    }
+    .sidebar.open {
+      transform: translateX(0);
+    }
+    .main-content {
+      transition: margin-left 0.3s ease-in-out;
+    }
+    .sidebar-open .menu-icon {
+      display: none;
+    }
+    #overlay {
+      display: none;
+    }
+    .overlay-visible #overlay {
+      display: block;
+    }
+.text-gradient {
+      background: linear-gradient(to right, #00c6ff, #0072ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+.section-heading {
+  font-size: 2rem;
+  color: white;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.section-divider {
+  width: 80px;
+  height: 2px;
+  background: #00cfff;
+  border: none;
+  margin-bottom: 30px;
+}
+
+.feature-card {
+  background-color: #1f2634;
+  border-radius: 15px;
+  margin: 15px 0;
+  padding: 15px 20px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.feature-card:hover {
+  transform: scale(1.02);
+  background-color: #2a3244;
+}
+
+.feature-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.1rem;
+  color: #ffffff;
+}
+
+.feature-header i {
+  font-size: 1.4rem;
+  color: #00cfff;
+}
+
+.feature-title {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.feature-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.4s ease;
+  opacity: 0;
+  padding-left: 30px;
+}
+
+.feature-card.expanded .feature-content {
+  max-height: 500px;
+  opacity: 1;
+  margin-top: 10px;
+}
+
+.section-title {
+  font-size: 2.2rem;
+  color: #ffffff;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+
+.section-divider {
+  border: 0;
+  height: 2px;
+  background: linear-gradient(to right, #00c6ff, #0072ff);
+  margin: 10px auto 30px auto;
+  width: 100px;
+}
+
+  </style>
+
+</head>
+<body class="bg-gray-900 text-white">
+  <!-- Overlay -->
+  <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30" onclick="closeSidebar()"></div>
+
+  <!-- Menu Icon -->
+  <div id="menuIcon" class="menu-icon text-white bg-blue-700 p-2 rounded-md" onclick="toggleSidebar()">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+  </div>
+
+  <div class="flex">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar fixed min-h-screen p-6 z-40 dark:bg-gray-800">
+      <h2 class="text-xl font-bold mb-6">Navigation</h2>
+      <nav class="flex flex-col space-y-4 text-white">
+        <button onclick="showSection('home'); toggleSidebar();" class="flex items-center space-x-2 hover:text-blue-400">
+          <i data-lucide="home" class="w-4 h-4"></i><span>Home</span>
+        </button>
+        <button onclick="showSection('live'); toggleSidebar();" class="flex items-center space-x-2 hover:text-blue-400">
+          <i data-lucide="activity" class="w-4 h-4"></i><span>Live</span>
+        </button>
+        <button onclick="showSection('history'); loadHistory(); toggleSidebar();" class="flex items-center space-x-2 hover:text-blue-400">
+          <i data-lucide="clock" class="w-4 h-4"></i><span>History</span>
+        </button>
+        <button onclick="showSection('features'); toggleSidebar();" class="flex items-center space-x-2 hover:text-blue-400">
+          <i data-lucide="list" class="w-4 h-4"></i><span>Features</span>
+        </button>
+        <button onclick="showSection('contact'); toggleSidebar();" class="flex items-center space-x-2 hover:text-blue-400">
+          <i data-lucide="mail" class="w-4 h-4"></i><span>Contact</span>
+        </button>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main id="mainContent" class="main-content flex-1 p-8 space-y-12 max-w-6xl mx-auto">
+
+      <!-- Home Section -->
+      <section id="home" class="space-y-12">
+        <div class="text-center space-y-4">
+          <h1 class="text-5xl font-extrabold bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+            EnviroSphere
+          </h1>
+          <p class="text-lg text-gray-400 dark:text-gray-300 max-w-2xl mx-auto">
+            Real-time environmental monitoring powered by Arduino & visualized with style.
+          </p>
+        </div>
+
+        <!-- Project Overview -->
+        <div class="bg-white/10 backdrop-blur-lg p-6 rounded-2xl shadow-lg text-gray-100 space-y-3 max-w-4xl mx-auto">
+          <h2 class="text-2xl font-bold text-center text-white">📘 Project Overview</h2>
+          <ul class="list-disc list-inside text-gray-200 text-sm md:text-base space-y-1">
+            <li>Real-time monitoring of temperature, humidity, and light using sensors.</li>
+            <li>Uses Induino R4 (Arduino Uno), DHT11, Onboard LDR, and OLED display.</li>
+            <li>Data sent wirelessly to desktop app via HC-05 Bluetooth.</li>
+            <li>Live visual updates and downloadable history logs.</li>
+          </ul>
+        </div>
+
+        <!-- Features Cards -->
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="bg-white/10 p-6 rounded-2xl hover:scale-105 transition">
+            <div class="text-2xl font-semibold mb-2">🌡️ Real-time Monitoring</div>
+            <p class="text-sm text-gray-200">Instant updates on temperature, humidity & light levels.</p>
+          </div>
+          <div class="bg-white/10 p-6 rounded-2xl hover:scale-105 transition">
+            <div class="text-2xl font-semibold mb-2">📊 Historical Logging</div>
+            <p class="text-sm text-gray-200">View logs over time with graphs and downloads.</p>
+          </div>
+          <div class="bg-white/10 p-6 rounded-2xl hover:scale-105 transition">
+            <div class="text-2xl font-semibold mb-2">🧠 Smart Insights</div>
+            <p class="text-sm text-gray-200">Smart alerts and future AI integrations.</p>
+          </div>
+        </div>
+
+        <!-- Components -->
+<div class="space-y-4">
+  <h2 class="text-3xl font-semibold text-center">🔩 Components Used</h2>
+  <div class="grid md:grid-cols-2 gap-6 text-gray-300">
+
+    <!-- Arduino UNO -->
+    <div class="bg-gray-800 p-4 rounded-xl shadow-sm flex flex-col items-center text-center">
+      <strong class="text-lg mb-2">Induino R4 (Arduino UNO)</strong>
+      <p class="text-sm">Acts as the brain of the project. It collects data from all sensors, processes it, and communicates with the OLED and Bluetooth module.</p>
+      <img src="{{ url_for('static', filename='images/induino.jpg') }}" alt="Arduino UNO" class="mt-4 w-48 rounded shadow-lg">
+    </div>
+
+    <!-- OLED 0.96 -->
+    <div class="bg-gray-800 p-4 rounded-xl shadow-sm flex flex-col items-center text-center">
+      <strong class="text-lg mb-2">OLED 0.96"</strong>
+      <p class="text-sm">A mini graphical display that shows temperature, humidity, and light readings in real-time from the Arduino.</p>
+      <img src="{{ url_for('static', filename='images/oled.jpg') }}" alt="OLED Display" class="mt-4 w-40 rounded shadow-lg">
+    </div>
+
+    <!-- DHT11 -->
+    <div class="bg-gray-800 p-4 rounded-xl shadow-sm flex flex-col items-center text-center">
+      <strong class="text-lg mb-2">DHT11 Sensor</strong>
+      <p class="text-sm">Captures temperature and humidity values for analyzing environmental conditions indoors.</p>
+      <img src="{{ url_for('static', filename='images/dht.jpg') }}" alt="DHT11" class="mt-4 w-32 rounded shadow-lg">
+    </div>
+
+    <!-- LDR -->
+    <div class="bg-gray-800 p-4 rounded-xl shadow-sm flex flex-col items-center text-center">
+      <strong class="text-lg mb-2">LDR Sensor (Onboard Sensor)</strong>
+      <p class="text-sm">Detects ambient light intensity. Useful for determining brightness levels or day/night conditions.</p>
+      <img src="{{ url_for('static', filename='images/ldr.jpg') }}" alt="LDR Sensor" class="mt-4 w-32 rounded shadow-lg">
+    </div>
+
+  </div>
+</div>
+
+
+      </section>
+
+      <!-- Live Monitoring Section -->
+      <section id="live" style="display:none" class="space-y-8">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+          <h2 class="text-3xl font-bold text-center w-full md:w-auto">📡 Live Monitoring</h2>
+          <div class="flex gap-4 text-sm text-white">
+            <div class="bg-blue-600 px-4 py-2 rounded-xl shadow" id="liveDate">📅 Date: --</div>
+            <div class="bg-blue-600 px-4 py-2 rounded-xl shadow" id="liveTime">⏰ Time: --</div>
+            <div class="bg-blue-600 px-4 py-2 rounded-xl shadow" id="liveDay">📆 Day: --</div>
+          </div>
+        </div>
+
+        <!-- Sensor Data -->
+          <div class="flex flex-col md:flex-row gap-4">
+            <div class="flex-1 bg-blue-500 text-white p-6 rounded-xl text-center shadow-lg">
+              <h3 class="text-xl font-semibold">🌡️ Temperature</h3>
+              <p id="tempText" class="text-2xl font-bold mt-2">-- °C</p>
+            </div>
+            <div class="flex-1 bg-green-500 text-white p-6 rounded-xl text-center shadow-lg">
+              <h3 class="text-xl font-semibold">💧 Humidity</h3>
+              <p id="humidityText" class="text-2xl font-bold mt-2">-- %</p>
+            </div>
+          </div>
+          <div class="bg-yellow-500 text-white p-6 rounded-xl text-center shadow-lg">
+            <h3 class="text-xl font-semibold">🔆 Light Exposure</h3>
+            <p id="lightText" class="text-2xl font-bold mt-2">--</p>
+          </div>
+
+          <!-- Live Graphs (Chart.js) -->
+          <div class="space-y-6">
+            <canvas id="tempChart" class="w-full rounded-md shadow bg-white"></canvas>
+            <canvas id="humChart" class="w-full rounded-md shadow bg-white"></canvas>
+            <canvas id="lightChart" class="w-full rounded-md shadow bg-white"></canvas>
+          </div>
+      </section>
+
+      <!-- Other Sections -->
+
+    <section id="history" style="display:none" class="space-y-6">
+  <h2 class="text-2xl font-semibold">📁 Previous 3 Days History</h2>
+
+  <div class="grid md:grid-cols-3 gap-4">
+    <!-- Temperature Button -->
+    <button id="tempHistoryBtn" onclick="toggleHistoryGraph('tempHistory')" class="bg-gray-800 hover:bg-blue-600 px-4 py-3 rounded-lg font-medium text-white flex items-center justify-center gap-2">
+      🌡️ Temperature
+    </button>
+
+    <!-- Humidity Button -->
+    <button id="humHistoryBtn" onclick="toggleHistoryGraph('humHistory')" class="bg-gray-800 hover:bg-blue-600 px-4 py-3 rounded-lg font-medium text-white flex items-center justify-center gap-2">
+      💧 Humidity
+    </button>
+
+    <!-- Light Button -->
+    <button id="lightHistoryBtn" onclick="toggleHistoryGraph('lightHistory')" class="bg-gray-800 hover:bg-blue-600 px-4 py-3 rounded-lg font-medium text-white flex items-center justify-center gap-2">
+      🔆 Light
+    </button>
+  </div>
+
+  <!-- Temperature Graphs -->
+  <div id="tempHistory" style="display:none" class="bg-white/10 p-6 rounded-xl space-y-4">
+    <h3 class="text-lg font-semibold text-white">Last 3 Days - Temperature</h3>
+    <div class="grid md:grid-cols-3 gap-4">
+      <img src="/history/temp_day1.png" class="rounded-md shadow" alt="Temp Day 1">
+      <img src="/history/temp_day2.png" class="rounded-md shadow" alt="Temp Day 2">
+      <img src="/history/temp_day3.png" class="rounded-md shadow" alt="Temp Day 3">
+    </div>
+    <div class="flex gap-4 pt-4">
+      <a href="/download/temp_history.png" class="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+        <i data-lucide="image"></i> PNG
+      </a>
+      <a href="/download/temp_history.csv" class="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+        <i data-lucide="file-text"></i> CSV
+      </a>
+    </div>
+  </div>
+
+  <!-- Humidity Graphs -->
+  <div id="humHistory" style="display:none" class="bg-white/10 p-6 rounded-xl space-y-4">
+    <h3 class="text-lg font-semibold text-white">Last 3 Days - Humidity</h3>
+    <div class="grid md:grid-cols-3 gap-4">
+      <img src="/history/hum_day1.png" class="rounded-md shadow" alt="Humidity Day 1">
+      <img src="/history/hum_day2.png" class="rounded-md shadow" alt="Humidity Day 2">
+      <img src="/history/hum_day3.png" class="rounded-md shadow" alt="Humidity Day 3">
+    </div>
+    <div class="flex gap-4 pt-4">
+      <a href="/download/hum_history.png" class="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+        <i data-lucide="image"></i> PNG
+      </a>
+      <a href="/download/hum_history.csv" class="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+        <i data-lucide="file-text"></i> CSV
+      </a>
+    </div>
+  </div>
+
+  <!-- Light Graphs -->
+  <div id="lightHistory" style="display:none" class="bg-white/10 p-6 rounded-xl space-y-4">
+    <h3 class="text-lg font-semibold text-white">Last 3 Days - Light</h3>
+    <div class="grid md:grid-cols-3 gap-4">
+      <img src="/history/light_day1.png" class="rounded-md shadow" alt="Light Day 1">
+      <img src="/history/light_day2.png" class="rounded-md shadow" alt="Light Day 2">
+      <img src="/history/light_day3.png" class="rounded-md shadow" alt="Light Day 3">
+    </div>
+    <div class="flex gap-4 pt-4">
+      <a href="/download/light_history.png" class="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+        <i data-lucide="image"></i> PNG
+      </a>
+      <a href="/download/light_history.csv" class="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+        <i data-lucide="file-text"></i> CSV
+      </a>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="section-title">
+    <h2 class="text-3xl font-bold text-center mb-6">Features</h2>
+    <hr class="section-divider">
+  </div>
+
+  <!-- Each Feature Card -->
+  <div class="feature-card" onclick="toggleCard(this)">
+    <div class="feature-header">
+      <i class="fas fa-sun"></i>
+      <span class="feature-title">Onboard LDR (Light Dependent Resistor)</span>
+    </div>
+    <div class="feature-content">
+      <p><strong>Function:</strong> Detects ambient light intensity to adapt OLED brightness and log variations.</p>
+      <ul>
+        <li>Used to adjust OLED display brightness based on room light.</li>
+        <li>Helps in energy saving and clear display in any lighting.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="feature-card" onclick="toggleCard(this)">
+    <div class="feature-header">
+      <i class="fas fa-thermometer-half"></i>
+      <span class="feature-title">DHT11 Sensor</span>
+    </div>
+    <div class="feature-content">
+      <p><strong>Function:</strong> Measures temperature and humidity; displays it on OLED and logs it for analysis.</p>
+      <ul>
+        <li>Provides real-time climate data.</li>
+        <li>Essential for creating comfort-aware systems.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="feature-card" onclick="toggleCard(this)">
+    <div class="feature-header">
+      <i class="fas fa-clock"></i>
+      <span class="feature-title">RTC Backend Timestamp </span>
+    </div>
+    <div class="feature-content">
+      <p><strong>Function:</strong> Maintains precise date and time for timestamped logging in the backend server.</p>
+      <ul>
+        <li>Used for consistent and reliable time tracking.</li>
+        <li>Enables proper plotting of historic data graphs.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="feature-card" onclick="toggleCard(this)">
+    <div class="feature-header">
+      <i class="fas fa-laptop-code"></i>
+      <span class="feature-title">Libraries and Modules Used</span>
+    </div>
+    <div class="feature-content">
+      <ul>
+        <li><code>Adafruit_GFX</code>, <code>Adafruit_SSD1306</code> – for OLED display</li>
+        <li><code>DHT.h</code> – to read DHT11 temperature/humidity sensor</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="feature-card" onclick="toggleCard(this)">
+    <div class="feature-header">
+      <i class="fas fa-brain"></i>
+      <span class="feature-title">AI Integration & Future Improvements</span>
+    </div>
+    <div class="feature-content">
+      <p><strong>Future Implementation:</strong></p>
+      <ul>
+        <li>Adding Bluetooth Module for remote data access.</li>
+        <li>Integrate AI to predict environmental changes using historical data trends.</li>
+        <li>Use ML models to suggest optimal light and temperature adjustments.</li>
+        <li>Automate control of smart devices (e.g., fans/lights) based on sensor inputs.</li>
+        <li>Enable cloud syncing for remote access and alerts via mobile apps.</li>
+      </ul>
+      <p><strong>Advantages of AI:</strong> Increases system intelligence, automation, comfort, and power efficiency.</p>
+    </div>
+  </div>
+</section>
+
+
+
+
+      <!-- Contact Section -->
+<section id="contact" style="display:none" class="space-y-10">
+  <div class="text-center space-y-4">
+    <h2 class="text-4xl font-bold bg-gradient-to-r from-pink-400 to-purple-600 bg-clip-text text-transparent">📬 Let's Connect</h2>
+    <p class="text-gray-300">Feel free to reach out on any platform below!</p>
+  </div>
+
+  <div class="max-w-xl mx-auto bg-white/10 backdrop-blur-md p-6 rounded-2xl shadow-xl">
+    <div class="flex justify-around items-center gap-6 text-white text-center">
+      <!-- GitHub -->
+      <a href="https://github.com/Rajaaditya-2207" target="_blank" class="flex flex-col items-center hover:scale-105 transition">
+        <i data-lucide="github" class="w-10 h-10 text-white"></i>
+        <span class="mt-2 text-sm">GitHub</span>
+      </a>
+
+      <!-- LinkedIn -->
+      <a href="https://www.linkedin.com/in/rajaaditya-r-696285330?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" class="flex flex-col items-center hover:scale-105 transition">
+        <i data-lucide="linkedin" class="w-10 h-10 text-white"></i>
+        <span class="mt-2 text-sm">LinkedIn</span>
+      </a>
+
+      <!-- Gmail -->
+      <a href="https://mail.google.com/mail/?view=cm&fs=1&to=rajaaditya0240@gmail.com" class="flex flex-col items-center hover:scale-105 transition">
+        <i data-lucide="mail" class="w-10 h-10 text-white"></i>
+        <span class="mt-2 text-sm">Gmail</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+    </main>
+  </div>
+
+  <!-- Scripts -->
+<script>
+  // Function to toggle the sidebar
+  function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    sidebar.classList.toggle("open");
+    document.body.classList.toggle("sidebar-open");
+    document.body.classList.toggle("overlay-visible");
+  }
+
+  // Function to close the sidebar
+  function closeSidebar() {
+    document.getElementById("sidebar").classList.remove("open");
+    document.body.classList.remove("sidebar-open");
+    document.body.classList.remove("overlay-visible");
+  }
+
+  // Function to show the selected section
+  function showSection(id) {
+    document.querySelectorAll("main section").forEach(sec => sec.style.display = "none");
+    const section = document.getElementById(id);
+    if (section) section.style.display = "block";
+  }
+
+  // Function to toggle history graphs visibility
+  function toggleHistoryGraph(selectedId) {
+    const allSections = ["tempHistory", "humHistory", "lightHistory"];
+
+    allSections.forEach(id => {
+      const section = document.getElementById(id);
+      const button = document.getElementById(id + "Btn");
+
+      if (id === selectedId) {
+        const isHidden = section.style.display === "none" || section.style.display === "";
+        section.style.display = isHidden ? "block" : "none";
+        button.classList.toggle("bg-blue-600", isHidden);
+        button.classList.toggle("bg-gray-800", !isHidden);
+      } else {
+        document.getElementById(id).style.display = "none";
+        document.getElementById(id + "Btn").classList.remove("bg-blue-600");
+        document.getElementById(id + "Btn").classList.add("bg-gray-800");
+      }
+    });
+  }
+
+  lucide.createIcons();
+
+  // Function to update live date and time
+  function updateDateTime() {
+    const now = new Date();
+    document.getElementById("liveDate").textContent = `📅 Date: ${now.toLocaleDateString()}`;
+    document.getElementById("liveTime").textContent = `⏰ Time: ${now.toLocaleTimeString()}`;
+    document.getElementById("liveDay").textContent = `📆 Day: ${now.toLocaleDateString(undefined, { weekday: 'long' })}`;
+  }
+
+  // Function to toggle feature card expanded state
+  function toggleCard(card) {
+    const allCards = document.querySelectorAll('.feature-card');
+    allCards.forEach(c => {
+      if (c !== card) c.classList.remove('expanded');
+    });
+    card.classList.toggle('expanded');
+  }
+
+  // Function to fetch live data and update UI
+  async function fetchData() {
+    const res = await fetch("/data");
+    const data = await res.json();
+
+    if (data.temperature && data.humidity && data.light) {
+      document.getElementById("tempText").textContent = data.temperature.at(-1) + " °C";
+      document.getElementById("humidityText").textContent = data.humidity.at(-1) + " %";
+      document.getElementById("lightText").textContent =
+        data.light.at(-1) === "Bright" ? "Bright" : "Dim";
+
+      // Update the live graphs (Chart.js)
+      tempChart.data.labels = data.time;
+      tempChart.data.datasets[0].data = data.temperature;
+      tempChart.update();
+
+      humChart.data.labels = data.time;
+      humChart.data.datasets[0].data = data.humidity;
+      humChart.update();
+
+      lightChart.data.labels = data.time;
+      lightChart.data.datasets[0].data = data.light.map(item => item === 'Bright' ? 1 : 0); // Bright = 1, Dim = 0
+      lightChart.update();
+    }
+  }
+
+  // Function to update graphs with images from the server
+  async function updateGraphs() {
+    const sensors = ['temperature', 'humidity', 'light'];
+    for (let sensor of sensors) {
+      for (let day = 1; day <= 3; day++) {
+        const imgEl = document.getElementById(`${sensor.slice(0, 3)}Graph${day}`);
+        if (imgEl) {
+          imgEl.src = `/graph/${sensor}/${day}?t=${Date.now()}`;
+        }
+      }
+    }
+  }
+
+  // Fetch historical data for download
+  async function loadHistory() {
+    const res = await fetch("/history");
+    const files = await res.json();
+    const list = document.getElementById("historyList");
+    list.innerHTML = "";
+    files.forEach(file => {
+      const link = document.createElement("a");
+      link.href = `/download/${file}`;
+      link.textContent = file;
+      link.className = "text-blue-400 block hover:underline";
+      list.appendChild(link);
+    });
+  }
+
+  // On page load
+  window.onload = () => {
+    showSection("home");
+    fetchData();
+    updateGraphs();
+    updateDateTime();
+    lucide.createIcons();
+  };
+
+  setInterval(updateDateTime, 100);
+  setInterval(() => {
+    fetchData();
+    updateGraphs();
+  }, 100); // Fetch new data and update graphs every 0.1 seconds
+
+  // Set up additional periodic fetch of sensor data if needed
+  setInterval(() => {
+    fetch('/get_data')
+      .then(res => res.json())
+      .then(data => {
+        console.log('Live Sensor Data:', data);
+        // Insert logic to update the DOM, if necessary
+        // Example: document.getElementById("temp").innerText = data.temperature;
+      });
+  }, 100); // Fetch additional data every 0.1 seconds (if required)
+</script>
+</body>
+</html>
