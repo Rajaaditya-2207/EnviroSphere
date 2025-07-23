@@ -1,4 +1,3 @@
-﻿# EnviroSphere
 # EnviroSphere 🌍
 
 ![GitHub language count](https://img.shields.io/github/languages/count/Rajaaditya-2207/EnviroSphere?style=for-the-badge)
